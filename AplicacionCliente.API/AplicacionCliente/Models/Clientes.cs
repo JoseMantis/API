@@ -1,5 +1,6 @@
 ﻿namespace AplicacionCliente.Models
 {
+    //Clase de clientes. Contiene Nombre, Dirección Rut y ID.
     public class Clientes
     {
         public int Id { get; set; }
