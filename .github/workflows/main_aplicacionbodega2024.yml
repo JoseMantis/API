@@ -22,19 +22,19 @@ jobs:
           dotnet-version: '8.x'
 
       - name: Restore dependencies
-        run: dotnet restore AplicacionBodega.API/AplicacionBodega.API.csproj
+        run: dotnet restore API/AplicacionBodega.API/AplicacionBodega.API.csproj
 
       - name: Build with dotnet
-        run: dotnet build AplicacionBodega.API/AplicacionBodega.API.csproj --configuration Release
+        run: dotnet build API/AplicacionBodega.API/AplicacionBodega.API.csproj --configuration Release
 
       - name: dotnet publish
-        run: dotnet publish AplicacionBodega.API/AplicacionBodega.API.csproj -c Release -o ${{ github.workspace }}/AplicacionBodega.API/publish
+        run: dotnet publish API/AplicacionBodega.API/AplicacionBodega.API.csproj -c Release -o ${{ github.workspace }}/API//AplicacionBodega.API/publish
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: dotnet-app
-          path: ${{ github.workspace }}/AplicacionBodega.API/publish
+          path: ${{ github.workspace }}/API/AplicacionBodega.API/publish
 
   deploy:
     runs-on: windows-latest
