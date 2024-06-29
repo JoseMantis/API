@@ -10,32 +10,24 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  build-static:
     runs-on: windows-latest
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up .NET Core
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '8.x'
-
-      - name: Build with dotnet
-        run: dotnet build --configuration Release
-
-      - name: dotnet publish
-        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
+      - name: Archive static files
+        run: zip -r my-static-site.zip path/to/static/files/
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
-          name: .net-app
-          path: ${{env.DOTNET_ROOT}}/myapp
+          name: static-site
+          path: my-static-site.zip
 
   deploy:
     runs-on: windows-latest
-    needs: build
+    needs: build-static
     environment:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
@@ -43,10 +35,10 @@ jobs:
       id-token: write #This is required for requesting the JWT
 
     steps:
-      - name: Download artifact from build job
+      - name: Download static-site artifact
         uses: actions/download-artifact@v4
         with:
-          name: .net-app
+          name: static-site
       
       - name: Login to Azure
         uses: azure/login@v2
@@ -55,11 +47,11 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_26136384CC8347159FAC75FCA239C640 }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_516D3E6714DB4071A14CCF898E05F408 }}
 
-      - name: Deploy to Azure Web App
-        id: deploy-to-webapp
+      - name: Deploy static site to Azure Web App
+        id: deploy-to-webapp-static
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'AppTest'
+          app-name: 'AppTestStatic'
           slot-name: 'Production'
-          package: .
+          package: my-static-site.zip
           
