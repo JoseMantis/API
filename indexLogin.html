@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesion</title>
+    <link rel="stylesheet" href="css/estilos.css">
+    <link rel="icon" href="img/icon.jpg">
+</head>
+<body>
+    <section class="form-main">
+        <div class="form-content">
+            
+            <h3>Bienvenido</h3>
+            <form method="post" action="" id="InicioSesion">
+                <div class="input-box">
+                    <input type="text" placeholder="Correo Electrónico" class="input-control" name="Email" id='Email'>
+                </div>
+                <div class="input-box">
+                    <input type="text" placeholder="Contraseña" class="input-control" name="Contraseña" id='Password'>
+                </div>
+                        <a href="recuperarC.html"class="gradient-text">¿Has olvidado tu contraseña?</a><!-- eticketa enlace para redirigir --> 
+                <div>
+                
+                
+                <input type="submit" value="Iniciar sesion" class="btn">
+                 
+            </form>
+        
+            <p>¿No estás registrado? <a href="signup.html" class="gradient-text">Registrarse</a></p>
+        </div>
+            <p> <a href="index.html" class="gradient-text"> Iniciar como invitado</a></p>
+            <!--<p>¿No tienes una cuenta? <a href="signup.html" class="gradient-text"> Crear cuenta</a></p> eticketa enlace para redirigir (por ahora DESACTIVADA hasta hacer la conexion para validar datos en BD)--> 
+
+        </div>
+
+    </section>
+    <div id="error"></div>
+
+
+    <script>
+        document.getElementById('InicioSesion').addEventListener('submit', function (event) {
+            event.preventDefault();
+            
+            const emailCliente = document.getElementById('Email').value;
+            const contraCliente = document.getElementById('Password').value;
+    
+            const url = `http://localhost:5000/api/Clientes/GetClienteByEmail?email=${encodeURIComponent(emailCliente)}`;
+    
+            fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Usuario no encontrado o datos incorrectos');
+                }
+                return response.json();
+            })
+            .then(Clientes => {
+                console.log('Cliente recibido:', Clientes); // Log para ver el objeto cliente
+                console.log('Contraseña ingresada:', contraCliente)
+
+                if (Clientes && Clientes.password === contraCliente) {
+                alert('Sesión Iniciada');
+                document.getElementById('InicioSesion').reset();
+                window.location.href = 'index.html';
+            } else {
+                throw new Error('Contraseña Incorrecta');
+            }
+            })
+            .catch(error => {
+                console.error('Error al iniciar sesión:', error);
+                alert('Error al iniciar sesión. Verifica los datos ingresados.');
+            });
+
+        });
+    </script>
+    
+    
+</body>
+</html>
